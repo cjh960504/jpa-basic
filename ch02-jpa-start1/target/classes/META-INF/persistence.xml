@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.1">
+
+    <!-- 영속성 유닛 : 연결할 데이터베이스 하나의 영속성 유닛을 등록   -->
+    <persistence-unit name="jpabasic">
+
+        <properties>
+
+            <!-- 필수 속성 -->
+            <!-- JPA 표준 속성 : 특정 구현체에 종속되지 않는다. -->
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/test"/>
+
+            <!-- 하이버네이트 전용 속성 -->
+            <!-- JPA -> Dialect(방언) <- DBMS -->
+            <!-- DBMS마다 SQL문법에 차이가 있다. JPA는 DBMS에 종속되지 않기 위해 데이터베이스 방언 클래스를 제공 -->
+            <!-- H2 : H2Dialect / Oracle : Oracle10gDialect / MySQL : MySQL5InnoDBDialect -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
+
+            <!-- 하이버네이트 전용 옵션 속성 -->
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
+            <property name="hibernate.use_sql_comments" value="true" />
+            <property name="hibernate.id.new_generator_mappings" value="true" />
+
+            <!--<property name="hibernate.hbm2ddl.auto" value="create" />-->
+        </properties>
+    </persistence-unit>
+
+</persistence>
