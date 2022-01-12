@@ -13,7 +13,7 @@ public class JpaMain {
         EntityTransaction tx = em.getTransaction();
 
         try {
-            clear(em, tx);
+            clear(em);
             //jpaCacheLogic(em, tx);
             //jpaIdentityLogic(em, tx);
             //쓰기지연Logic(em, tx);
@@ -146,7 +146,7 @@ public class JpaMain {
         return member;
     }
 
-    public static void clear(EntityManager em, EntityTransaction tx){
+    public static void clear(EntityManager em){
         List<Member> memberList = em.createQuery("select m from Member m", Member.class).getResultList();
 
         memberList.stream()
