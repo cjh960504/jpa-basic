@@ -21,6 +21,10 @@ public class JpaMain {
         Board board = new Board();
         board.setData("데이타 데이타 데이타");
         em.persist(board);
+
+        Board board2 = new Board();
+        board2.setData("데이타 데이타 데이타");
+        em.persist(board2);
     }
 
 
