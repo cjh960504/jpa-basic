@@ -7,18 +7,21 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.util.List;
+import java.util.concurrent.atomic.LongAccumulator;
 
 public class JpaMain {
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpabasic");
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        logic(em);
-        deleteRelation(em);
-        tx.commit();
+//        tx.begin();
+//        logic(em);
+//        //deleteRelation(em);
+//        tx.commit();
+        biDirection(em);
 
-        queryLogicJoin(em);
+
+        //queryLogicJoin(em);
 
         em.close();
         emf.close();
@@ -32,31 +35,39 @@ public class JpaMain {
             builder() : 생성자 실행
         */
         
-        Team team = Team.builder()
+        /*Team team = Team.builder()
                 .name("개나리팀")
-                .build();
+                .build();*/
+        Team team = new Team();
+        team.setName("개나리팀");
         em.persist(team);
 
-        Member member = Member.builder()
+/*        Member member = Member.builder()
                 .userName("최준혁")
                 .team(team)
-                .build();
+                .build();*/
+        Member member = new Member();
+        member.setUserName("최준혁");
+        member.setTeam(team);
         em.persist(member);
 
-        Member member2 = Member.builder()
+        /*Member member2 = Member.builder()
                 .userName("김준혁")
                 .team(team)
-                .build();
+                .build();*/
+        Member member2 = new Member();
+        member2.setUserName("김준혁");
+        member2.setTeam(team);
         em.persist(member2);
 
         Member findMember = em.find(Member.class, member.getMemberId());
         System.out.println("findMember.getTeam().getName() = " + findMember.getTeam().getName());
 
-        updateRelation(em, member);
+        //updateRelation(em, member);
 
-//        Team findTeam = em.find(Team.class, team.getTeamId());
-//
-//        System.out.println("findTeam = " + findTeam);
+        Team findTeam = em.find(Team.class, team.getTeamId());
+
+        System.out.println("findTeam = " + findTeam);
     }
 
     private static void queryLogicJoin(EntityManager em) { //JPQL 을 이용한 JOIN
@@ -71,11 +82,11 @@ public class JpaMain {
     }
 
     private static void updateRelation(EntityManager em, Member member) {
-        Team team2 = Team.builder().name("진달래팀").build();
-        em.persist(team2);
-
-        Member findMember = em.find(Member.class, member.getMemberId());
-        findMember.setTeam(team2);
+//        Team team2 = Team.builder().name("진달래팀").build();
+//        em.persist(team2);
+//
+//        Member findMember = em.find(Member.class, member.getMemberId());
+//        findMember.setTeam(team2);
     }
 
     private static void deleteRelation(EntityManager em){
@@ -84,6 +95,13 @@ public class JpaMain {
 
         em.remove(em.find(Team.class, Long.valueOf(1)));
         em.remove(em.find(Team.class, Long.valueOf(4)));
+    }
+    
+    private static void biDirection(EntityManager em){ //양방향
+        Team team = em.find(Team.class, Long.valueOf(1));
+        team.getMembers()
+                .stream()
+                .forEach(member -> System.out.println("member = " + member.getUserName()));
     }
 
 

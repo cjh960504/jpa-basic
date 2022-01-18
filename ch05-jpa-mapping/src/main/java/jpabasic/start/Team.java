@@ -4,12 +4,13 @@ import lombok.Builder;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "TEAM")
-@Builder
-@ToString
+//@Builder
+//@ToString
 public class Team {
     @Id
     @GeneratedValue
@@ -19,8 +20,8 @@ public class Team {
     @Column(name = "NAME")
     private String name;
 
-    /*@OneToMany
-    private List<Member> members;
+    @OneToMany(mappedBy = "team") //양방향 연관관계 매핑 , 다대일(멤버기준) <-> 일대다 (팀기준)
+    private List<Member> members = new ArrayList<Member>();
 
     public List<Member> getMembers() {
         return members;
@@ -28,7 +29,7 @@ public class Team {
 
     public void setMembers(List<Member> members) {
         this.members = members;
-    }*/
+    }
 
     public Long getTeamId() {
         return teamId;
