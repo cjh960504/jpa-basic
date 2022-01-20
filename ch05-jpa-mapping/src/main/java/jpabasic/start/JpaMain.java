@@ -14,11 +14,12 @@ public class JpaMain {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpabasic");
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
-//        tx.begin();
 //        logic(em);
 //        //deleteRelation(em);
-//        tx.commit();
-        biDirection(em);
+        tx.begin();
+        realBiDirection(em);
+        tx.commit();
+        //biDirection(em);
 
 
         //queryLogicJoin(em);
@@ -104,5 +105,30 @@ public class JpaMain {
                 .forEach(member -> System.out.println("member = " + member.getUserName()));
     }
 
+    private static void realBiDirection(EntityManager em) {
+        Team team = new Team();
+        team.setName("양방향팀");
+        em.persist(team);
+
+        Member member1 = new Member();
+        member1.setUserName("이준혁");
+        member1.setTeam(team); //리팩토링한 setTeam 메서드를 통해 영속성 컨텍스트를 업데이트 해준다.
+
+
+        Member member2 = new Member();
+        member2.setUserName("이준혁");
+        member2.setTeam(team);
+
+        member1.getTeam().getMembers().stream().forEach(member -> System.out.println("UserName = " + member.getUserName() + "\nteamName = " + member.getTeam().getName()));
+
+
+        Team team2 = new Team();
+        team2.setName("쌍방향팀");
+        em.persist(team2);
+        member2.setTeam(team2);
+
+        //영속성 컨텍스트로 관리하고 있기 때문에, member2의 team을 바꾸면 member1과 속했던 이전의 team에서 member2는 속해있지않는다.
+        member1.getTeam().getMembers().stream().forEach(member -> System.out.println("UserName = " + member.getUserName() + "\nteamName = " + member.getTeam().getName()));
+    }
 
 }
