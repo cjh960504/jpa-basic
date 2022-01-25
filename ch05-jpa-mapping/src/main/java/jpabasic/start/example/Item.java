@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Table
 @Entity
 public class Item {
     @Id
@@ -20,6 +19,13 @@ public class Item {
 
     @OneToMany(mappedBy = "item")
     private List<OrderItem> orderItemList = new ArrayList<OrderItem>();
+
+    public void addOrderItem(OrderItem orderItem) {
+        orderItemList.add(orderItem);
+        if (orderItem.getItem() != this) {
+            orderItem.setItem(this);
+        }
+    }
 
     public Long getItemId() {
         return itemId;

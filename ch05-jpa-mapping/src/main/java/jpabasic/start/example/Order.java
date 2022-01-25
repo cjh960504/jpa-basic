@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Table
 @Entity
+@Table(name = "ORDERS")
+//테이블명을 Order 로 할 시 H2에서 예약어로 사용 중이어서 에러를 떨어뜨린다. (Order[*] 로 표시)
 public class Order {
     @Id
     @GeneratedValue
@@ -47,7 +48,23 @@ public class Order {
     }
 
     public void setMember(Member member) {
+        //기존 연관관계 제거
+        if (this.member != null) {
+            this.member.getOrderList().remove(this);
+        }
         this.member = member;
+
+        if (!member.getOrderList().contains(this)) { //무한루프에 빠지지 않도록
+            member.getOrderList().add(this);
+        }
+    }
+
+    public void addOrderItem(OrderItem orderItem){
+        orderItemList.add(orderItem);
+
+        if (orderItem.getOrder() != this) {
+            orderItem.setOrder(this);
+        }
     }
 
     public Date getOrderDate() {
@@ -66,3 +83,4 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 }
+

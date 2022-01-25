@@ -2,7 +2,6 @@ package jpabasic.start.example;
 
 import javax.persistence.*;
 
-@Table
 @Entity
 public class OrderItem {
     @Id
@@ -35,7 +34,14 @@ public class OrderItem {
     }
 
     public void setOrder(Order order) {
+        if (this.order != null) {
+            this.order.getOrderItemList().remove(this);
+        }
         this.order = order;
+
+        if (!order.getOrderItemList().contains(this)) {
+            order.getOrderItemList().add(this);
+        }
     }
 
     public Item getItem() {
@@ -43,7 +49,14 @@ public class OrderItem {
     }
 
     public void setItem(Item item) {
+        if (this.item != null) {
+            this.item.getOrderItemList().remove(this);
+        }
         this.item = item;
+
+        if (!item.getOrderItemList().contains(this)) {
+            item.getOrderItemList().add(this);
+        }
     }
 
     public int getOrderPrice() {

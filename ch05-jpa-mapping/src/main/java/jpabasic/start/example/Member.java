@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Table
 @Entity(name = "MEMBER")
 public class Member {
     @Id
@@ -31,6 +30,13 @@ public class Member {
 
     public List<Order> getOrderList() {
         return orderList;
+    }
+
+    public void addOrder(Order order){
+        this.orderList.add(order);
+        if (order.getMember() != this) { //무한루프에 빠지지 않도록
+            order.setMember(this);
+        }
     }
 
     public void setOrderList(List<Order> orderList) {

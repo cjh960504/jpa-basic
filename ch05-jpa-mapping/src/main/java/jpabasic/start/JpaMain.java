@@ -1,11 +1,17 @@
 package jpabasic.start;
 
 import javassist.compiler.MemberCodeGen;
+import jpabasic.start.example.Item;
+import jpabasic.start.example.Order;
+import jpabasic.start.example.OrderItem;
+import jpabasic.start.example.OrderStatus;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.LongAccumulator;
 
@@ -14,12 +20,12 @@ public class JpaMain {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpabasic");
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
+        tx.begin();
 //        logic(em);
 //        //deleteRelation(em);
-        tx.begin();
-        realBiDirection(em);
+        examBiDirection(em);
         tx.commit();
-        //biDirection(em);
+//        biDirection(em);
 
 
         //queryLogicJoin(em);
@@ -129,6 +135,57 @@ public class JpaMain {
 
         //영속성 컨텍스트로 관리하고 있기 때문에, member2의 team을 바꾸면 member1과 속했던 이전의 team에서 member2는 속해있지않는다.
         member1.getTeam().getMembers().stream().forEach(member -> System.out.println("UserName = " + member.getUserName() + "\nteamName = " + member.getTeam().getName()));
+    }
+
+    private static void examBiDirection(EntityManager em) {
+        jpabasic.start.example.Member member = new jpabasic.start.example.Member();
+        member.setName("3");
+        member.setCity("청주시");
+        member.setStreet("원봉로");
+        member.setZipcode("23040");
+        em.persist(member);
+        System.out.println("member = " + member.getMemberId());
+
+        Item item = new Item();
+        item.setName("마우스");
+        item.setPrice(50000);
+        item.setStockQuantity(50);
+        em.persist(item);
+
+        Order order = new Order();
+        order.setMember(member);
+        em.persist(order);
+
+        Order order1 = new Order();
+        order1.setOrderDate(new Date());
+        order1.setOrderStatus(OrderStatus.Order);
+        em.persist(order1);
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setOrder(order1);
+        orderItem.setItem(item);
+        em.persist(orderItem);
+
+        //Order 내 setMember 메서드로 인하여 find()로 조회하지않아도 영속성관리할 수 있도록
+        member.getOrderList().stream().forEach(myOrder -> System.out.println("myOrder = " + myOrder.getOrderId()));
+
+
+
+//        member.addOrder(order1);
+        order.setOrderStatus(OrderStatus.Cancle);
+        order1.setMember(member);
+        em.remove(order);
+
+        //객체 그래프 탐색!
+        member.getOrderList()
+                .stream()
+                .map(myOrder -> myOrder.getOrderItemList())
+                .flatMap(List::stream)
+                .forEach(myOrderItem-> System.out.println("myOrderItem = " + myOrderItem.getOrder().getOrderId() + "/" + myOrderItem.getItem().getName()));
+
+
+
+
     }
 
 }
