@@ -182,10 +182,6 @@ public class JpaMain {
                 .map(myOrder -> myOrder.getOrderItemList())
                 .flatMap(List::stream)
                 .forEach(myOrderItem-> System.out.println("myOrderItem = " + myOrderItem.getOrder().getOrderId() + "/" + myOrderItem.getItem().getName()));
-
-
-
-
     }
 
 }

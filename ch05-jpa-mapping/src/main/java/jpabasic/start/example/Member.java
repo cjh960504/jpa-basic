@@ -25,8 +25,15 @@ public class Member {
 
     //일대다 관계 시 mappedBy
     //연관관계 주인의 엔티티명
-    @OneToMany(mappedBy = "member")
+    /* 다대일 관계 */
+    //@OneToMany(mappedBy = "member")
+    /* 일대다 관계 (SQL 로 생각하면 JOIN 시 테이블의 위치를 바꿔준 격?)*/
+    @OneToMany
+    @JoinColumn(name = "MEMBER_ID")
+    /* 일대다 관계*/
     private List<Order> orderList = new ArrayList<Order>();
+
+
 
     public List<Order> getOrderList() {
         return orderList;
