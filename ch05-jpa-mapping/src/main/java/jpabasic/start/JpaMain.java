@@ -179,7 +179,7 @@ public class JpaMain {
         //객체 그래프 탐색!
         member.getOrderList()
                 .stream()
-                .map(myOrder -> myOrder.getOrderItemList())
+                .map(Order::getOrderItemList)
                 .flatMap(List::stream)
                 .forEach(myOrderItem-> System.out.println("myOrderItem = " + myOrderItem.getOrder().getOrderId() + "/" + myOrderItem.getItem().getName()));
     }
