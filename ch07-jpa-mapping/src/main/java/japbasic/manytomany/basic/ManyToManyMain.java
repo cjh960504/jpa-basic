@@ -1,4 +1,4 @@
-package japbasic.manytomany;
+package japbasic.manytomany.basic;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
