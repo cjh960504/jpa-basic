@@ -2,7 +2,7 @@ package mappedsuperclass;
 
 import javax.persistence.Entity;
 
-@Entity
+//@Entity
 public class Member extends BaseEntity{
     private String email;
 
