@@ -1,4 +1,4 @@
-package compositeKey.noenIdentifying;
+package compositeKey.noenIdentifying.idclass;
 
 import java.io.Serializable;
 

@@ -1,11 +1,11 @@
-package compositeKey.noenIdentifying;
+package compositeKey.noenIdentifying.idclass;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 
-@Entity
+//@Entity
 @IdClass(ParentId.class)
 public class Parent {
     @Id

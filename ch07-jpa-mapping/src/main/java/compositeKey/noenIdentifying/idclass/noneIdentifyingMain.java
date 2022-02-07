@@ -1,4 +1,4 @@
-package compositeKey.noenIdentifying;
+package compositeKey.noenIdentifying.idclass;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

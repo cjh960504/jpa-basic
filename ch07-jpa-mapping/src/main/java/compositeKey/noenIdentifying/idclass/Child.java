@@ -1,8 +1,8 @@
-package compositeKey.noenIdentifying;
+package compositeKey.noenIdentifying.idclass;
 
 import javax.persistence.*;
 
-@Entity
+//@Entity
 public class Child {
     @Id
     private String id;
