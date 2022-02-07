@@ -2,7 +2,7 @@ package compositeKey.Identifying.embeddedId;
 
 import javax.persistence.*;
 
-@Entity
+//@Entity
 public class Child {
     @EmbeddedId
     private ChildId childId;
