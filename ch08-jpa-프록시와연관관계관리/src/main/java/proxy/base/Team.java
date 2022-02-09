@@ -1,6 +1,7 @@
 package proxy.base;
 
 import javax.persistence.*;
+import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,8 @@ public class Team {
 
     private String name;
 
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "team")
+    @Deprecated
     private List<Member> members = new ArrayList<Member>();
 
     public void addMember(Member member) {

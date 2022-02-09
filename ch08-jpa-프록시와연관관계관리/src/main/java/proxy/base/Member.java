@@ -1,6 +1,8 @@
 package proxy.base;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
 * @Access(AccessType.FIELD)
@@ -23,11 +25,22 @@ public class Member {
 
     // 즉시 로딩 : Member 를 조회할 때 연관되어있는 엔티티(TEAM)를 같이 조회
     // optional = false 로 주게 되면 조인 시 inner join 을 사용하게 된다. <-> true 면 outer
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "TEAM_ID", nullable = false) //nullable = false 로 주게 되면 조인 시 내부조인을 사용하게 된다. (조인 시 조건의 외래키가 Nullable = false 일때)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "TEAM_ID") //nullable = false 로 주게 되면 조인 시 내부조인을 사용하게 된다. (조인 시 조건의 외래키가 Nullable = false 일때)
     private Team team;
 
-//    @Id
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Order> orders = new ArrayList<Order>();
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    //    @Id
 //    @GeneratedValue
 //    @Column(name = "MEMBER_ID")
     public Long getId() {
