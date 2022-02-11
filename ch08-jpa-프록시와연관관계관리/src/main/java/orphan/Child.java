@@ -2,7 +2,7 @@ package orphan;
 
 import javax.persistence.*;
 
-@Entity
+//@Entity
 public class Child {
     @Id
     @GeneratedValue

@@ -9,7 +9,7 @@ import java.util.List;
 * 엔티티 접근 방식을 필드로 설정하면 getId()와 같은 식별자를 반환하는 메서드를
 * JPA는 메소드가 Id만 조회하는 메소드인지 다른 필드까지 활용하는 메서드인지 알지 못하므로 프록시 객체를 초기화한다.
 */
-@Entity
+//@Entity
 /*em.getReference() 호출 시 식별자값을 넘겨주었기 때문에 프로퍼티로 설정하면 DB에 조회하지 않는다.
 * 대신 필드에 줬던 어노테이션들을 메서드에 붙여줘야함*/
 //@Access(AccessType.PROPERTY)

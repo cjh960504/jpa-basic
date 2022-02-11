@@ -3,7 +3,7 @@ package proxy.base;
 import javax.persistence.*;
 import java.util.Date;
 
-@Entity
+//@Entity
 @Table(name = "ORDERS")
 public class Order {
     @Id
