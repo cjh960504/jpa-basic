@@ -23,12 +23,11 @@ public class EmbeddedMain {
         period.setEndDate(calendar.getTime());
         member.setWorkPeriod(period);
 
-        Address address = new Address();
-//        address.setCity("청주시");
-//        address.setStreet("원봉로 52");
-//        address.setZipcode("23334");
-        member.setHomeAddress(null); //임베디드 타입의 필드에 null을 주면 임베디드 타입이 가리키는 컬럼 값들 모두 null로 들어감
-        member.setCompanyAddress(null);
+        Address address = new Address("청주시", "원봉로 52", "32323");
+        member.setHomeAddress(address); //임베디드 타입의 필드에 null을 주면 임베디드 타입이 가리키는 컬럼 값들 모두 null로 들어감
+
+        //같은 임베디드 타입을 사용하고 값도 같을 때, 기본 값 타입이 아닌 임베디드 타입이므로 새로운 인스턴스를 생성해야 한다.
+        member.setCompanyAddress(new Address(address.getCity(), address.getStreet(), address.getZipcode()));
         
         tx.begin();
         em.persist(member);

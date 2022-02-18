@@ -17,7 +17,6 @@ public class Member {
     * ORM 을 사용하지 않고 개발하면 테이블 컬럼과 객체 필드를 무조건 1:1 로 매핑하게 되는데, 이를 JPA에 맡기고 더 세밀한
     * 객체지향 모델을 설계할 수 있다.
     * */
-
     // 구체적으로 근무 시간이란 이름으로 임베디드 객체를 생성하지 않고, 기간이라는 엔티티를 만들어서 어느 엔티티에서도 사용가능하도록
     @Embedded private Period workPeriod;
     @Embedded private Address homeAddress;
