@@ -1,7 +1,9 @@
 package valuetype.embedded;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Member {
@@ -37,6 +39,19 @@ public class Member {
 
     public void setCompanyAddress(Address companyAddress) {
         this.companyAddress = companyAddress;
+    }
+
+
+    @ElementCollection
+    @CollectionTable(name = "ADDRESS", joinColumns = @JoinColumn(name = "MEMBER_ID"))
+    private List<Address> addressesHistory = new ArrayList<Address>();
+
+    public List<Address> getAddressesHistory() {
+        return addressesHistory;
+    }
+
+    public void setAddressesHistory(List<Address> addressesHistory) {
+        this.addressesHistory = addressesHistory;
     }
 
     //근무 기간
