@@ -1,8 +1,12 @@
 package query.jpql;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity
+@NoArgsConstructor
 public class Member {
     @Id
     @GeneratedValue
@@ -16,6 +20,11 @@ public class Member {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TEAM_ID")
     private Team team;
+
+    public Member(String username, int age) {
+        this.username = username;
+        this.age = age;
+    }
 
     public Long getId() {
         return id;
