@@ -126,10 +126,12 @@ public class JPQLMain {
         em.createQuery("SELECT COUNT(m), SUM(m.age), MIN(m.age), MAX(m.age), AVG(m.age) FROM Member m")
                 .getSingleResult();
 
-        em.createQuery("SELECT t.name, COUNT(m), SUM(m.age), MIN(m.age), MAX(m.age), AVG(m.age) " +
+        em.createQuery(
+                "SELECT t.name, COUNT(m), SUM(m.age), MIN(m.age), MAX(m.age), AVG(m.age) " +
                 "FROM Member m " +
                 "LEFT JOIN m.team t " +
-                "GROUP BY t.name HAVING AVG(m.age) >= 26 ORDER BY t.name DESC")
+                "GROUP BY t.name HAVING AVG(m.age) >= 26 " +
+                "ORDER BY t.name DESC")
                 .getSingleResult();
 
     }
