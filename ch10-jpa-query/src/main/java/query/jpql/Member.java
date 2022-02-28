@@ -2,11 +2,13 @@ package query.jpql;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor
+@ToString
 public class Member {
     @Id
     @GeneratedValue
@@ -24,6 +26,12 @@ public class Member {
     public Member(String username, int age) {
         this.username = username;
         this.age = age;
+    }
+
+    public Member(String username, int age, Team team) {
+        this.username = username;
+        this.age = age;
+        this.team = team;
     }
 
     public Long getId() {

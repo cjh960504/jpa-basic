@@ -7,24 +7,8 @@ public class JPQLMain {
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpabasic");
         EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
 
-        /*tx.begin();
-        Member member = new Member();
-        member.setAge(27);
-        member.setUsername("최준혁");
-
-        Team team = new Team();
-        team.setName("팀1");
-
-        member.setTeam(team);
-
-        em.persist(team);
-        em.persist(member);
-
-        tx.commit();*/
-
-        groupByAndHavingQuery(em);
+        jqplCollectionFetchJoin(em);
 
         em.close();
         emf.close();
@@ -134,5 +118,133 @@ public class JPQLMain {
                 "ORDER BY t.name DESC")
                 .getSingleResult();
 
+    }
+
+
+    public static void jpqlInnerAndOuterJoin(EntityManager em) {
+        /* JPQL 내부 조인은 (INNER) JOIN 엔티티 내 연관필드를 사용한다.*/
+        /* Member m INNER JOIN m.team(Member 내 Team 연관필드 사용) t */
+        List<Object[]> resultList = em.createQuery("SELECT m, t FROM Member m INNER JOIN m.team t WHERE t.name = :teamName")
+                .setParameter("teamName", "팀1")
+                .getResultList();
+
+        for (Object[] row : resultList) {
+            Member member = (Member) row[0];
+            Team team = (Team) row[1];
+        }
+
+        /* JPQL 외부 조인도 마찬가지로 LEFT [OUTER] JOIN 엔티티 내 연관필드를 사용한다.*/
+        /* Member LEFT|RIGHT JOIN m.team(Member 내 Team 연관필드 사용) t */
+        em.createQuery("SELECT m.username, t.name FROM Member m LEFT JOIN m.team t").getResultList();
+    }
+
+    public static void jpqlCollectionJoin(EntityManager em){
+        /* 다대일 조인 -> 단일값 연관 필드 사용 */
+        /* 일대다 조인 -> 컬렉션 값 연관 필드 사용*/
+        /* JPQL 은 컬렉션 값 연관 필드로 외부 조인이 가능하다. */
+        /* LEFT JOIN t.members(컬렉션 값 연관 필드) m */
+        String query = "SELECT t, m FROM Team t LEFT JOIN t.members m";
+        em.createQuery(query).getResultList();
+    }
+
+    public static void jpqlThetaJoin(EntityManager em){
+        /* JPQL 세타조인은 내부 조인만 지원 */
+        /* 세타 조인을 사용하면 전혀 관계없는 엔티티도 조인할 수 있다.*/
+        String query = "SELECT count(m) FROM Member m, Team t WHERE m.username = t.name";
+        em.createQuery(query).getResultList();
+        /*실행결과
+        * from
+        *   Member member0_ cross
+        * join
+        *   Team team1_
+        *
+        * */
+    }
+
+    public static void jpqlJoinOn(EntityManager em){
+
+        /*EntityTransaction tx = em.getTransaction();
+
+        tx.begin();
+        Team team1 = new Team("TeamMemberA");
+        Team team2 = new Team("TeamMemberB");
+        em.persist(team1);
+        em.persist(team2);
+
+        Member member1 = new Member("TeamMemberA", 20, team1);
+        Member member2 = new Member("TeamMemberB", 20, team2);
+        Member member3 = new Member("그냥이름", 20, team1);
+        em.persist(member1);
+        em.persist(member2);
+        em.persist(member3);
+
+        em.flush();
+        em.clear();
+
+        tx.commit();
+*/
+        String query = "SELECT m, t FROM Member m LEFT JOIN m.team t WHERE t.name = m.username";
+
+        /* Join 대상의 엔티티(Team)를 먼저 필터링한 후 Join*/
+        String query2 = "SELECT m, t FROM Member m LEFT JOIN m.team t on t.name = 'TeamMemberB'";
+        List<Object[]> resultList = em.createQuery(query2).getResultList();
+
+        for (Object[] row : resultList) {
+            Member member = (Member) row[0];
+            Team team = (Team) row[1];
+
+            System.out.println("member = " + member.toString());
+            System.out.println("team = " + team.toString());
+        }
+    }
+
+    public static void jpqlFetchJoin(EntityManager em){
+        /* fetch Join 을 사용하지 않는 경우 연관 엔티티를 대신할 프록시 객체를 만들어놓고, 연관 엔티티 접근 시 조회 */
+        /* team 접근 시
+        from
+           Team team0_
+        where
+           team0_.TEAM_ID=? */
+        String query2 = "SELECT m FROM Member m LEFT JOIN m.team t";
+        List<Member> resultList2 = em.createQuery(query2, Member.class).getResultList();
+        resultList2.stream().forEach(System.out :: println);
+
+        /* JPQL 에서 성능 최적화를 위해 제공하는 기능 - 연관된 엔티티도 함께 조회하는 기능 */
+        /* 지연 로딩을 사용하고 있는 연관 엔티티라면? fetch 조인을 하게 되면 프록시 객체를 만드는게 아닌 실제 엔티티를 조회한다.(fetch = FetchType.EAGER 와 같이) */
+        String query = "SELECT m FROM Member m LEFT JOIN fetch m.team t";
+        List<Member> resultList = em.createQuery(query, Member.class).getResultList();
+        resultList.stream().forEach(System.out :: println);
+        em.clear();
+    }
+
+    public static void jqplCollectionFetchJoin(EntityManager em){
+        String query = "SELECT t FROM Team t Left join fetch t.members m where t.name = 'TeamMemberA'";
+        List<Team> teams = em.createQuery(query, Team.class).getResultList();
+        teams.stream().forEach(System.out :: println);
+        teams.stream().forEach(team -> System.out.println(team.hashCode()));
+        /* 컬렉션 fetch 조인으로 회원도 함께 조회됨 */
+        /* 이때, 동일한 Team 엔티티가 여러 연관 엔티티(Member)를 가져와야하므로, 같은 주소를 가지는 Team 엔티티를 2건 가지게 된다.*/
+        /* 복수값을 컬럼으로 가져올 수 없으니(?)*/
+        /* 결과값
+        * Team{id=38, name='TeamMemberA'}
+        * Team{id=38, name='TeamMemberA'}
+        * 220062907
+        * 220062907
+        * */
+
+        /* JPQL의 DISTINCT 명령어는 SQL에 DISTINCT 를 추가하는 것은 물론이고, 애플리케이션에서 한번 더 중복(엔티티 중복)을 제거한다.*/
+        query = "SELECT distinct t FROM Team t LEFT JOIN t.members where t.name = 'TeamMemberA'";
+        List<Team> teams2 = em.createQuery(query, Team.class).getResultList();
+        teams2.stream().forEach(System.out :: println);
+        /*결과값
+        * Team{id=38, name='TeamMemberA'} - 위 쿼리 결과와 달리 같은 엔티티는 제거됨
+        * */
+
+        /* 페치 조인과 일반 조인의 차이?
+        * - 일반 조인의 경우 연관관계까지 고려하지 않기 때문에 SELECT 절에서 지정한 엔티티만 조회한다.
+        * - 지연 로딩 엔티티의 일반 조인의 경우 프록시 객체나 초기화하지 않은 컬렉션 래퍼를 반환한다. 
+        * - 즉시 로딩 엔티티의 일반 조인의 경우 연관 엔티티를 가져오기 위해 한번더 조회 쿼리를 실행한다. 
+        * - 페치 조인을 사용하면 연관된 엔티티를 한번의 조회 쿼리를 통해 가져온다. => 성능 최적화
+        * */
     }
 }
