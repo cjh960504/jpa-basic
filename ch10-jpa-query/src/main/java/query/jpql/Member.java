@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -22,6 +24,17 @@ public class Member {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TEAM_ID")
     private Team team;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Order> orderList = new ArrayList<Order>();
+
+    public List<Order> getOrderList() {
+        return orderList;
+    }
+
+    public void setOrderList(List<Order> orderList) {
+        this.orderList = orderList;
+    }
 
     public Member(String username, int age) {
         this.username = username;
