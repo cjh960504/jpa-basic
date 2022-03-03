@@ -8,7 +8,7 @@ public class JPQLMain {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpabasic");
         EntityManager em = emf.createEntityManager();
 
-        jpqlPathExpression(em);
+        jpqlSubQuery(em);
 
         em.close();
         emf.close();
@@ -111,11 +111,11 @@ public class JPQLMain {
                 .getSingleResult();
 
         em.createQuery(
-                "SELECT t.name, COUNT(m), SUM(m.age), MIN(m.age), MAX(m.age), AVG(m.age) " +
-                        "FROM Member m " +
-                        "LEFT JOIN m.team t " +
-                        "GROUP BY t.name HAVING AVG(m.age) >= 26 " +
-                        "ORDER BY t.name DESC")
+                        "SELECT t.name, COUNT(m), SUM(m.age), MIN(m.age), MAX(m.age), AVG(m.age) " +
+                                "FROM Member m " +
+                                "LEFT JOIN m.team t " +
+                                "GROUP BY t.name HAVING AVG(m.age) >= 26 " +
+                                "ORDER BY t.name DESC")
                 .getSingleResult();
 
     }
@@ -251,10 +251,10 @@ public class JPQLMain {
     /*경로 표현식*/
     public static void jpqlPathExpression(EntityManager em) {
         /* 여기서 말하는 탐색은 탐색은 JPQL Query 문에서의 탐색을 말함
-        * 상태 필드 : 단순히 값을 저장하기 위한 필드 ->  경로 탐색의 끝
-        * 연관 필드 - 단일값 연관 필드 : 대상이 엔티티(@ManyToOne, @OneToOne) -> 묵시적 내부조인, 계속 탐색 가능
-        * 연관 필드 - 컬렉션 연관 필드 : 대상이 컬렉션(@OneToMany, @ManyToMany) -> 묵시적 내부조인, FROM절에서 조인을 통해 별칭을 얻으면 별칭으로 탐색 가능
-        * */
+         * 상태 필드 : 단순히 값을 저장하기 위한 필드 ->  경로 탐색의 끝
+         * 연관 필드 - 단일값 연관 필드 : 대상이 엔티티(@ManyToOne, @OneToOne) -> 묵시적 내부조인, 계속 탐색 가능
+         * 연관 필드 - 컬렉션 연관 필드 : 대상이 컬렉션(@OneToMany, @ManyToMany) -> 묵시적 내부조인, FROM절에서 조인을 통해 별칭을 얻으면 별칭으로 탐색 가능
+         * */
 
         String 상태필드 = "SELECT m.username, m.age FROM Member m";
 
@@ -267,6 +267,21 @@ public class JPQLMain {
         String 컬렉션연관필드 = "SELECT o.product FROM Member m join m.orderList o";
 
         em.createQuery(컬렉션연관필드).getResultList();
+
+    }
+
+    /*서브 쿼리*/
+    public static void jpqlSubQuery(EntityManager em){
+        /* JPQL 에서의 서브쿼리는 WHERE, HAVING 절에서만 사용할 수 있다. (아닌 구현체들도 존재)*/
+        String query = "select m from Member m where (select count(o) from Order o where m=o.member) > 0";
+        query = "select m from Member m where m.orderList.size > 0"; //주문 수량이 0 이상인 멤버
+        query = "select m from Member m where exists ( select t from m.team t where t.name = 'TeamMemberA')"; // 팀 이름이 TeamMemberA인 팀에 소속된 멤버
+        query = "select m from Member m where m.team = all(select t from Team t)"; // 모든 팀에 소속된 멤버
+        query = "select m from Member m where m.team = any(select t from Team t)"; // 어떤 팀이든 소속된 멤버
+        query = "select m from Member m where m in (select m from Member m where m.age > 20)"; //20세 이상의 회원
+
+        List<Member> resultList = em.createQuery(query, Member.class).getResultList();
+
 
     }
 }
