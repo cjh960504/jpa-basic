@@ -8,7 +8,7 @@ public class JPQLMain {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpabasic");
         EntityManager em = emf.createEntityManager();
 
-        jpqlSubQuery(em);
+        jpqlNamedQuery(em);
 
         em.close();
         emf.close();
@@ -281,7 +281,25 @@ public class JPQLMain {
         query = "select m from Member m where m in (select m from Member m where m.age > 20)"; //20세 이상의 회원
 
         List<Member> resultList = em.createQuery(query, Member.class).getResultList();
+    }
 
+    /*정적 쿼리*/
+    public static void jpqlNamedQuery(EntityManager em){
+        /*createQuery() : 동적 쿼리, createNamedQuery : 정적 쿼리*/
+        /* 1. @NamedQuery 사용 */
+        /*List<Member> members = em.createNamedQuery("Member.findByUsername", Member.class)
+                .setParameter("username", "최준혁")
+                .getResultList();*/
 
+        /* 2. Named 쿼리 XML 사용 */
+
+        List<Member> members = em.createNamedQuery("Member.findByUsername", Member.class)
+                .setParameter("username", "최준혁")
+                .getResultList();
+
+        Object count = em.createNamedQuery("Member.count").getSingleResult();
+
+        members.stream().forEach(member -> System.out.println(member.toString()));
+        System.out.println("count = " + (Long)count);
     }
 }

@@ -11,6 +11,10 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @ToString
+@NamedQuery(
+        name = "Member.findByUsername",
+        query = "select m from Member m where m.username = :username"
+) //Named 쿼리 XML 과 같은 이름의 쿼리 존재 시, XML 쿼리를 우선 시
 public class Member {
     @Id
     @GeneratedValue

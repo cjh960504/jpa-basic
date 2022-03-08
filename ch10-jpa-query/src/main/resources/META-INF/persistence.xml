@@ -3,7 +3,8 @@
 
     <!-- 영속성 유닛 : 연결할 데이터베이스 하나의 영속성 유닛을 등록   -->
     <persistence-unit name="jpabasic">
-
+        <!--NamedQuery XML 추가-->
+        <mapping-file>META-INF/ormMember.xml</mapping-file>
         <properties>
 
             <!-- 필수 속성 -->
