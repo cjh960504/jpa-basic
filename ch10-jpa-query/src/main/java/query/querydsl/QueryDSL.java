@@ -1,16 +1,20 @@
 package query.querydsl;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
+import org.h2.util.StringUtils;
 import org.hibernate.criterion.Projection;
 import query.jpql.*;
 
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.util.List;
 
@@ -175,6 +179,50 @@ public class QueryDSL {
 
         /* 필드 직접 접근 - private 여도 동작한다. (프로퍼티 방식과 다르게 getter/setter 없어도 된다. )*/
         List<Member> members3 = queryFactory.select(Projections.fields(Member.class, member.username, member.age)).from(member).fetch();
+    }
+
+    public void updateAndInsert() {
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+
+        /* insert 는 EntityManager 로 한다.
+        *  update/delete 도 트랜잭션 필요! */
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        long count = queryFactory.update(product)
+                .where(product.name.eq("오징어"))
+                .set(product.price, product.price.add(500))
+                .execute();
+
+        long deleteCount = queryFactory.delete(product)
+                .where(product.name.eq("오징어"))
+                .execute();
+
+        tx.commit();
+    }
+
+    public void queryDSLDynamicQuery() {
+        /* where 절 자동 생성 */
+        BooleanBuilder builder = new BooleanBuilder();
+        String name = "오징어";
+        Integer price = 3000;
+
+        if (name != null) {
+            builder.and(product.name.contains(name));
+        }
+
+        if (price != null) {
+            builder.and(product.price.goe(price));
+        }
+
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        List<Product> products = queryFactory.select(product)
+                .from(product)
+                .where(builder)
+                .fetch();
+
+        products.stream().forEach(product1 -> System.out.println(product1));
+
     }
 
     public void close(){

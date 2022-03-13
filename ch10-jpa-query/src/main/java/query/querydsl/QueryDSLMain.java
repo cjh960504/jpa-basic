@@ -12,7 +12,9 @@ public class QueryDSLMain {
 //        queryDSL.queryDSLGroupByAndHaving();
 //        queryDSL.queryDSLJoin();
 //        queryDSL.queryDSLSubQuery();
-        queryDSL.queryDSLProjection();
+//        queryDSL.queryDSLProjection();
+//        queryDSL.updateAndInsert();
+        queryDSL.queryDSLDynamicQuery();
         queryDSL.close();
     }
 }
