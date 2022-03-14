@@ -15,6 +15,11 @@ import java.util.List;
         name = "Member.findByUsername",
         query = "select m from Member m where m.username = :username"
 ) //Named 쿼리 XML 과 같은 이름의 쿼리 존재 시, XML 쿼리를 우선 시
+@SqlResultSetMapping( //네이티브SQL 결과 매핑 설정
+        name = "memberWithOrderCount",
+        entities = {@EntityResult(entityClass = Member.class)},
+        columns = {@ColumnResult(name = "ORDER_COUNT")}
+)
 public class Member {
     @Id
     @GeneratedValue
